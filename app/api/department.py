@@ -12,6 +12,7 @@ from app.services.department import (
     get_department_service,
     list_department_service,
     update_department_service,
+    delete_department_service,
 )
 
 router = APIRouter(prefix="/departments", tags=["Department"])
@@ -58,3 +59,13 @@ def update_department(
         department_id,
         data
     )
+
+@router.delete(
+    "/{department_id}",
+    status_code=204,
+)
+def delete_department_api(
+    department_id: int,
+    db: Session = Depends(get_db),
+):
+    delete_department_service(db, department_id)

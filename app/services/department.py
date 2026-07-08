@@ -9,6 +9,7 @@ from app.crud.department import (
     get_department_by_id,
     list_departments,
     update_department,
+    delete_department,
 )
 
 
@@ -67,3 +68,17 @@ def update_department_service(
         department,
         data
     )
+
+def delete_department_service(
+    db: Session,
+    department_id: int,
+):
+    department = get_department_by_id(db, department_id)
+
+    if not department:
+        raise HTTPException(
+            status_code=404,
+            detail="Department not found"
+        )
+
+    delete_department(db, department)
