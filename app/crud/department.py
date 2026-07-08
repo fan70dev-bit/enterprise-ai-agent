@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 
 from app.models.department import Department
 from app.schemas.department import DepartmentCreate
+from app.schemas.department import DepartmentUpdate
 
 
 def create_department(db: Session, department: DepartmentCreate) -> Department:
@@ -40,3 +41,17 @@ def list_departments(db: Session) -> list[Department]:
 def delete_department(db: Session, department: Department) -> None:
     db.delete(department)
     db.commit()
+
+def update_department(
+    db: Session,
+    department: Department,
+    data: DepartmentUpdate,
+):
+
+    department.name = data.name
+    department.description = data.description
+
+    db.commit()
+    db.refresh(department)
+
+    return department

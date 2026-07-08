@@ -6,11 +6,20 @@ class DepartmentBase(BaseModel):
     description: str | None = None
 
 
-class DepartmentCreate(DepartmentBase):
-    pass
+class DepartmentCreate(BaseModel):
+    name: str
+    description: str | None = None
 
 
-class DepartmentResponse(DepartmentBase):
+class DepartmentUpdate(BaseModel):
+    name: str
+    description: str | None = None
+
+
+class DepartmentResponse(BaseModel):
     id: int
+    name: str
+    description: str | None
 
-    model_config = ConfigDict(from_attributes=True)
+    class Config:
+        from_attributes = True
