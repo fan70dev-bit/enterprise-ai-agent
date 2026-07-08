@@ -1,19 +1,36 @@
 from sqlalchemy.orm import Session
+from fastapi import HTTPException, status
 
 from app.crud.department import (
     create_department,
-    get_department_by_name,
+    get_department_by_id,
 )
-from app.schemas.department import DepartmentCreate
 
 
 def create_department_service(
     db: Session,
-    department: DepartmentCreate,
+    department,
 ):
-    existing = get_department_by_name(db, department.name)
+    return create_department(
+        db,
+        department
+    )
 
-    if existing:
-        raise ValueError("Department already exists")
 
-    return create_department(db, department)
+def get_department_service(
+    db: Session,
+    department_id: int,
+):
+
+    department = get_department_by_id(
+        db,
+        department_id
+    )
+
+    if not department:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Department not found"
+        )
+
+    return department
