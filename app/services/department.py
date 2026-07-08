@@ -4,6 +4,7 @@ from fastapi import HTTPException, status
 from app.crud.department import (
     create_department,
     get_department_by_id,
+    list_departments,
 )
 
 
@@ -34,3 +35,8 @@ def get_department_service(
         )
 
     return department
+
+def list_department_service(
+    db: Session,
+):
+    return list_departments(db)

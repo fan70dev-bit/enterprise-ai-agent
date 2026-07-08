@@ -6,6 +6,7 @@ from app.schemas.department import DepartmentCreate, DepartmentResponse
 from app.services.department import (
     create_department_service,
     get_department_service,
+    list_department_service,
 )
 
 router = APIRouter(prefix="/departments", tags=["Department"])
@@ -27,3 +28,12 @@ def get_department(
     db: Session = Depends(get_db),
 ):
     return get_department_service(db, department_id)
+
+@router.get(
+    "",
+    response_model=list[DepartmentResponse],
+)
+def list_departments_api(
+    db: Session = Depends(get_db),
+):
+    return list_department_service(db)
