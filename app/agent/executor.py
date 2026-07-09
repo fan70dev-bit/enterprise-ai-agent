@@ -9,23 +9,30 @@ def execute(
     current_user,
 ):
 
-    tool_name = plan["tool"]
+    results = {}
 
-    args = plan.get("args", {})
+    tools = plan.get("tools", [])
 
-    tool = TOOLS.get(tool_name)
+    if not tools:
+        return "没有找到可以执行的工具。"
 
-    if tool is None:
-        return {
-            "error": "Unknown tool"
-        }
+    for item in tools:
 
-    result = tool(
-        db=db,
-        current_user=current_user,
-        **args,
-    )
+        tool_name = item["tool"]
 
-    data = serialize(result)
+        args = item.get("args", {})
 
-    return summarize(data)
+        tool = TOOLS.get(tool_name)
+
+        if tool is None:
+            continue
+
+        result = tool(
+            db=db,
+            current_user=current_user,
+            **args,
+        )
+
+        results[tool_name] = serialize(result)
+
+    return summarize(results)

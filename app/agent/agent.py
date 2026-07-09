@@ -13,6 +13,11 @@ class EnterpriseAgent:
 
         action = plan(message)
 
+        print("=" * 50)
+        print("Planner Result:")
+        print(action)
+        print("=" * 50)
+
         return execute(
             plan=action,
             db=db,
