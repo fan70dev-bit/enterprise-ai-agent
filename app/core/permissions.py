@@ -1,14 +1,16 @@
-from fastapi import HTTPException
+from fastapi import Depends, HTTPException
+
 from app.models.user import User
+from app.core.deps import get_current_user
 
 
 def require_admin(
-    user: User
+    current_user: User = Depends(get_current_user),
 ):
-    if user.role != "admin":
+    if current_user.role != "admin":
         raise HTTPException(
             status_code=403,
-            detail="Admin permission required"
+            detail="Admin permission required",
         )
 
-    return user
+    return current_user
