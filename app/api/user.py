@@ -3,7 +3,9 @@ from typing import List
 from fastapi import APIRouter, Depends, Response
 from sqlalchemy.orm import Session
 
+from app.core.deps import get_current_user
 from app.db.database import get_db
+from app.models.user import User
 
 from app.schemas.user import (
     UserCreate,
@@ -32,6 +34,7 @@ router = APIRouter(
 def create_user(
     user: UserCreate,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     return create_user_service(db, user)
 
@@ -42,6 +45,7 @@ def create_user(
 )
 def list_users(
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     return list_users_service(db)
 
@@ -53,6 +57,7 @@ def list_users(
 def get_user(
     user_id: int,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     return get_user_service(db, user_id)
 
@@ -65,6 +70,7 @@ def update_user(
     user_id: int,
     user: UserUpdate,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     return update_user_service(
         db,
@@ -80,6 +86,7 @@ def update_user(
 def delete_user(
     user_id: int,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     delete_user_service(db, user_id)
     return Response(status_code=204)

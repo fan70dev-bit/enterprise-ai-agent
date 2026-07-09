@@ -3,12 +3,14 @@ from sqlalchemy.orm import Session
 from app.models.user import User
 from app.schemas.user import UserCreate, UserUpdate
 
+from app.core.security import get_password_hash
+
 
 def create_user(db: Session, user: UserCreate) -> User:
     db_user = User(
         username=user.username,
         email=user.email,
-        hashed_password=user.password,
+        hashed_password=get_password_hash(user.password),
         department_id=user.department_id,
     )
 
