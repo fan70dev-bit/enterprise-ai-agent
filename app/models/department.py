@@ -1,8 +1,7 @@
 from sqlalchemy import String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
-
 
 class Department(Base):
     __tablename__ = "department"
@@ -18,4 +17,9 @@ class Department(Base):
     description: Mapped[str | None] = mapped_column(
         String(255),
         nullable=True,
+    )
+
+    users = relationship(
+        "User",
+        back_populates="department"
     )
