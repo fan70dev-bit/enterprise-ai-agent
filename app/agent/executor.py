@@ -1,4 +1,6 @@
 from app.agent.registry import TOOLS
+from app.agent.serializer import serialize
+from app.llm.summarizer import summarize
 
 
 def execute(
@@ -18,8 +20,12 @@ def execute(
             "error": "Unknown tool"
         }
 
-    return tool(
+    result = tool(
         db=db,
         current_user=current_user,
         **args,
     )
+
+    data = serialize(result)
+
+    return summarize(data)
