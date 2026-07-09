@@ -62,6 +62,16 @@ def list_user_tasks(
         .all()
     )
 
+def list_tasks_by_user(
+    db: Session,
+    user_id: int,
+):
+    return (
+        db.query(Task)
+        .filter(Task.user_id == user_id)
+        .all()
+    )
+
 
 
 def update_task(

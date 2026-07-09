@@ -12,6 +12,8 @@ class Settings(BaseSettings):
     MYSQL_PASSWORD: str
     MYSQL_DATABASE: str
 
+    DEEPSEEK_API_KEY: str
+
 
     SECRET_KEY: str = "your-super-secret-key-change-this"
 
