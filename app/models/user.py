@@ -51,8 +51,14 @@ class User(Base):
         nullable=False
     )
 
+    tasks = relationship(
+        "Task",
+        back_populates="user",
+    )
 
     department = relationship(
         "Department",
         back_populates="users"
     )
+
+    
