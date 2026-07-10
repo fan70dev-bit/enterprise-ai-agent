@@ -11,10 +11,12 @@ from app.schemas.task import (
     TaskUpdate,
 )
 from app.schemas.report import ReportCreate
+from app.llm.report_generator import generate_daily_report
 
 from sqlalchemy.orm import Session
 
 from app.crud.task import list_user_tasks
+
 from app.crud.report import (
     list_reports,
     create_report,
@@ -151,22 +153,12 @@ def generate_report(
     db: Session,
     current_user: User,
 ):
-    """
-    AI生成日报（第一版）
-    """
-
     tasks = list_user_tasks(
         db=db,
         user_id=current_user.id,
     )
 
-    content = "今日完成工作：\n\n"
-
-    if not tasks:
-        content += "今天暂无任务。"
-    else:
-        for task in tasks:
-            content += f"- {task.title}\n"
+    content = generate_daily_report(tasks)
 
     report = ReportCreate(
         user_id=current_user.id,
