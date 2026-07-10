@@ -70,3 +70,37 @@ def chat(
     )
 
     return result
+
+def summarize_tool_result(
+    message: str,
+    tool_result,
+):
+    messages = [
+        {
+            "role": "system",
+            "content": """
+你是企业办公 AI 助手。
+
+下面是工具返回的数据。
+
+请根据数据回答用户。
+
+不要编造。
+回答简洁自然。
+""",
+        },
+        {
+            "role": "user",
+            "content": f"""
+用户问题：
+
+{message}
+
+工具结果：
+
+{tool_result}
+""",
+        },
+    ]
+
+    return llm.chat(messages)

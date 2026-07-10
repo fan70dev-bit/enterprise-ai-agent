@@ -29,14 +29,13 @@ def execute(
 
         # 普通聊天
         if tool_name == "chat":
-
             return tool(
                 db=db,
                 current_user=current_user,
                 message=message,
             )
 
-        # 业务工具
+        # 调用业务工具
         result = tool(
             db=db,
             current_user=current_user,
@@ -45,5 +44,8 @@ def execute(
 
         results[tool_name] = serialize(result)
 
-    # 将多个 Tool 结果交给 LLM 总结
-    return summarize(results)
+    # 将 Tool 结果交给 LLM 总结
+    return summarize(
+        message=message,
+        data=results,
+    )
