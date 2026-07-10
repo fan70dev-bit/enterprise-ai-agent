@@ -1,8 +1,14 @@
 from app.crud.task import (
     list_user_tasks,
     create_task as crud_create_task,
+    get_task_by_title,
+    update_task as crud_update_task,
 )
-from app.schemas.task import TaskCreate
+
+from app.schemas.task import (
+    TaskCreate,
+    TaskUpdate,
+)
 
 from sqlalchemy.orm import Session
 
@@ -77,5 +83,39 @@ def create_task(
 
     return crud_create_task(
         db=db,
+        task=task,
+    )
+
+def update_task(
+    db: Session,
+    current_user: User,
+    title: str,
+    status: str | None = None,
+    priority: str | None = None,
+):
+    """
+    修改任务
+    """
+
+    db_task = get_task_by_title(
+        db=db,
+        user_id=current_user.id,
+        title=title,
+    )
+
+    if db_task is None:
+        return "没有找到该任务。"
+
+    task = TaskUpdate()
+
+    if status is not None:
+        task.status = status
+
+    if priority is not None:
+        task.priority = priority
+
+    return crud_update_task(
+        db=db,
+        db_task=db_task,
         task=task,
     )

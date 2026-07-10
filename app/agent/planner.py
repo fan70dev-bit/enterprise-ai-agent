@@ -28,6 +28,7 @@ get_my_tasks
 get_my_reports
 get_user_info
 create_task
+update_task
 generate_report
 
 规则：
@@ -37,7 +38,8 @@ generate_report
 3. 查询日报请选择 get_my_reports。
 4. 查询用户请选择 get_user_info。
 5. 创建任务请选择 create_task。
-6. 一个问题可以调用多个工具。
+6. 修改任务请选择 update_task。
+7. 一个问题可以调用多个工具。
 
 示例：
 
@@ -89,6 +91,24 @@ generate_report
                 "title":"完成周报",
                 "description":"整理本周工作",
                 "priority":"high"
+            }
+        }
+    ]
+}
+
+用户：
+
+把完成周报改成已完成
+
+返回：
+
+{
+    "tools":[
+        {
+            "tool":"update_task",
+            "args":{
+                "title":"完成周报",
+                "status":"done"
             }
         }
     ]

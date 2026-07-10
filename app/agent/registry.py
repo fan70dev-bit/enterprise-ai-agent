@@ -5,8 +5,8 @@ from app.agent.tools import (
     get_my_reports,
     get_user_info,
     create_task,
+    update_task,
 )
-
 
 TOOLS = {
     "chat": chat,
@@ -18,4 +18,6 @@ TOOLS = {
     "get_user_info": get_user_info,
 
     "create_task": create_task,
+
+    "update_task": update_task,
 }
