@@ -10,11 +10,15 @@ from app.schemas.task import (
     TaskCreate,
     TaskUpdate,
 )
+from app.schemas.report import ReportCreate
 
 from sqlalchemy.orm import Session
 
 from app.crud.task import list_user_tasks
-from app.crud.report import list_reports
+from app.crud.report import (
+    list_reports,
+    create_report,
+)
 from app.crud.user import get_user_by_id
 
 from app.models.user import User
@@ -142,3 +146,34 @@ def delete_task(
     return {
         "message": f"任务【{title}】已删除。"
     }
+
+def generate_report(
+    db: Session,
+    current_user: User,
+):
+    """
+    AI生成日报（第一版）
+    """
+
+    tasks = list_user_tasks(
+        db=db,
+        user_id=current_user.id,
+    )
+
+    content = "今日完成工作：\n\n"
+
+    if not tasks:
+        content += "今天暂无任务。"
+    else:
+        for task in tasks:
+            content += f"- {task.title}\n"
+
+    report = ReportCreate(
+        user_id=current_user.id,
+        content=content,
+    )
+
+    return create_report(
+        db=db,
+        report=report,
+    )

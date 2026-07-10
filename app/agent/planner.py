@@ -41,7 +41,9 @@ generate_report
 5. 创建任务请选择 create_task。
 6. 修改任务请选择 update_task。
 7. 删除任务请选择 delete_task。
-8. 一个问题可以调用多个工具。
+8. 生成日报请选择 generate_report。
+9. 一个问题可以调用多个工具。
+
 示例：
 
 用户：
@@ -132,6 +134,21 @@ generate_report
     ]
 }
 
+用户：
+
+帮我生成今天的工作日报
+
+返回：
+
+{
+    "tools":[
+        {
+            "tool":"generate_report",
+            "args":{}
+        }
+    ]
+}
+
 不要输出 Markdown。
 不要解释。
 不要输出 ```json。
@@ -159,7 +176,11 @@ def plan(
             ]
         }
 
-    if "日报" in message:
+    if (
+        "查询日报" in message
+        or "我的日报" in message
+        or "查看日报" in message
+    ):
         return {
             "tools": [
                 {

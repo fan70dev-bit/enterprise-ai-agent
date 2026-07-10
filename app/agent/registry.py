@@ -7,6 +7,7 @@ from app.agent.tools import (
     create_task,
     update_task,
     delete_task,
+    generate_report,
 )
 
 TOOLS = {
@@ -23,4 +24,6 @@ TOOLS = {
     "update_task": update_task,
 
     "delete_task": delete_task,
+
+    "generate_report": generate_report,
 }
