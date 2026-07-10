@@ -43,8 +43,10 @@ generate_report
 7. 删除任务请选择 delete_task。
 8. 生成日报请选择 generate_report。
 9. 一个问题可以调用多个工具。
+10. tools 必须按照执行顺序排列。
+11. 如果需要多个工具，请全部返回，不要遗漏。
 
-示例：
+示例一：
 
 用户：
 
@@ -61,6 +63,8 @@ generate_report
     ]
 }
 
+示例二：
+
 用户：
 
 查询我的任务
@@ -75,6 +79,8 @@ generate_report
         }
     ]
 }
+
+示例三：
 
 用户：
 
@@ -99,6 +105,8 @@ generate_report
     ]
 }
 
+示例四：
+
 用户：
 
 把完成周报改成已完成
@@ -117,6 +125,8 @@ generate_report
     ]
 }
 
+示例五：
+
 用户：
 
 删除完成周报
@@ -134,6 +144,8 @@ generate_report
     ]
 }
 
+示例六：
+
 用户：
 
 帮我生成今天的工作日报
@@ -144,6 +156,27 @@ generate_report
     "tools":[
         {
             "tool":"generate_report",
+            "args":{}
+        }
+    ]
+}
+
+示例七：
+
+用户：
+
+帮我总结今天工作
+
+返回：
+
+{
+    "tools":[
+        {
+            "tool":"get_my_tasks",
+            "args":{}
+        },
+        {
+            "tool":"get_my_reports",
             "args":{}
         }
     ]

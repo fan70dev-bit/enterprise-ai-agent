@@ -15,7 +15,8 @@ def execute(
     if not tools:
         return "没有找到可以执行的工具。"
 
-    results = {}
+    # 保存所有 Tool 的结果
+    context = {}
 
     for item in tools:
 
@@ -35,17 +36,18 @@ def execute(
                 message=message,
             )
 
-        # 调用业务工具
+        # 将之前 Tool 的结果传递给后续 Tool
         result = tool(
             db=db,
             current_user=current_user,
+            context=context,
             **args,
         )
 
-        results[tool_name] = serialize(result)
+        context[tool_name] = serialize(result)
 
-    # 将 Tool 结果交给 LLM 总结
+    # 如果只有一个 Tool，直接总结
     return summarize(
         message=message,
-        data=results,
+        data=context,
     )
