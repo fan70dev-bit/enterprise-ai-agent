@@ -8,9 +8,9 @@ SYSTEM_PROMPT = """
 
 你的职责是分析用户请求，并决定需要调用哪些工具。
 
-只能返回JSON。
+只能返回 JSON。
 
-格式如下：
+格式：
 
 {
     "tools":[
@@ -21,28 +21,39 @@ SYSTEM_PROMPT = """
     ]
 }
 
-目前支持工具：
+支持工具：
 
 get_my_tasks
 get_my_reports
 get_user_info
 generate_report
+chat
 
 规则：
 
-1. 一个问题可以调用多个工具。
-2. tools 按执行顺序排列。
-3. 如果只需要一个工具，tools 数组只有一个元素。
-4. 如果没有对应工具：
+1. 普通聊天请选择 chat。
+2. 查询任务请选择 get_my_tasks。
+3. 查询日报请选择 get_my_reports。
+4. 查询用户请选择 get_user_info。
+5. 一个问题可以调用多个工具。
 
-{
-    "tools":[]
-}
-
-示例一：
+示例：
 
 用户：
+你好
 
+返回：
+
+{
+    "tools":[
+        {
+            "tool":"chat",
+            "args":{}
+        }
+    ]
+}
+
+用户：
 查询我的任务
 
 返回：
@@ -56,68 +67,61 @@ generate_report
     ]
 }
 
-示例二：
-
-用户：
-
-帮我总结今天工作
-
-返回：
-
-{
-    "tools":[
-        {
-            "tool":"get_my_tasks",
-            "args":{}
-        },
-        {
-            "tool":"get_my_reports",
-            "args":{}
-        }
-    ]
-}
-
-示例三：
-
-用户：
-
-查看我的信息
-
-返回：
-
-{
-    "tools":[
-        {
-            "tool":"get_user_info",
-            "args":{}
-        }
-    ]
-}
-
 不要输出 Markdown。
-
 不要解释。
-
 不要输出 ```json。
 """
 
-def plan(message: str):
 
-    messages = [
-        {
-            "role": "system",
-            "content": SYSTEM_PROMPT,
-        },
-        {
-            "role": "user",
-            "content": message,
-        },
-    ]
+def plan(
+    message: str,
+    history: list,
+):
 
-    result = llm.chat(messages)
+    # ======== 第一层：规则判断 ========
 
-    result = result.replace("```json", "")
-    result = result.replace("```", "")
-    result = result.strip()
+    if "任务" in message:
+        return {
+            "tools": [
+                {
+                    "tool": "get_my_tasks",
+                    "args": {}
+                }
+            ]
+        }
 
-    return json.loads(result)
+    if "日报" in message:
+        return {
+            "tools": [
+                {
+                    "tool": "get_my_reports",
+                    "args": {}
+                }
+            ]
+        }
+
+    if (
+        "部门" in message
+        or "邮箱" in message
+        or "用户信息" in message
+        or "个人信息" in message
+    ):
+        return {
+            "tools": [
+                {
+                    "tool": "get_user_info",
+                    "args": {}
+                }
+            ]
+        }
+
+    # ======== 其它全部走聊天 ========
+
+    return {
+        "tools": [
+            {
+                "tool": "chat",
+                "args": {}
+            }
+        ]
+    }

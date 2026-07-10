@@ -66,4 +66,9 @@ class User(Base):
         back_populates="user"
     )
 
+    chat_messages = relationship(
+        "ChatMessage",
+        back_populates="user",
+    )
+
     
