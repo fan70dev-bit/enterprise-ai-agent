@@ -6,6 +6,7 @@ from app.agent.tools import (
     get_user_info,
     create_task,
     update_task,
+    delete_task,
 )
 
 TOOLS = {
@@ -20,4 +21,6 @@ TOOLS = {
     "create_task": create_task,
 
     "update_task": update_task,
+
+    "delete_task": delete_task,
 }

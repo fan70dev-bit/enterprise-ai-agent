@@ -3,6 +3,7 @@ from app.crud.task import (
     create_task as crud_create_task,
     get_task_by_title,
     update_task as crud_update_task,
+    delete_task_by_title,
 )
 
 from app.schemas.task import (
@@ -119,3 +120,25 @@ def update_task(
         db_task=db_task,
         task=task,
     )
+
+def delete_task(
+    db: Session,
+    current_user: User,
+    title: str,
+):
+    """
+    删除任务
+    """
+
+    result = delete_task_by_title(
+        db=db,
+        user_id=current_user.id,
+        title=title,
+    )
+
+    if result is None:
+        return "没有找到该任务。"
+
+    return {
+        "message": f"任务【{title}】已删除。"
+    }

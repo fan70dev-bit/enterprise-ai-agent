@@ -120,3 +120,25 @@ def get_task_by_title(
         )
         .first()
     )
+
+def delete_task_by_title(
+    db: Session,
+    user_id: int,
+    title: str,
+):
+    db_task = (
+        db.query(Task)
+        .filter(
+            Task.user_id == user_id,
+            Task.title == title,
+        )
+        .first()
+    )
+
+    if db_task is None:
+        return None
+
+    db.delete(db_task)
+    db.commit()
+
+    return db_task

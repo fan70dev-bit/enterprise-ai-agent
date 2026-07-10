@@ -29,6 +29,7 @@ get_my_reports
 get_user_info
 create_task
 update_task
+delete_task
 generate_report
 
 规则：
@@ -39,8 +40,8 @@ generate_report
 4. 查询用户请选择 get_user_info。
 5. 创建任务请选择 create_task。
 6. 修改任务请选择 update_task。
-7. 一个问题可以调用多个工具。
-
+7. 删除任务请选择 delete_task。
+8. 一个问题可以调用多个工具。
 示例：
 
 用户：
@@ -109,6 +110,23 @@ generate_report
             "args":{
                 "title":"完成周报",
                 "status":"done"
+            }
+        }
+    ]
+}
+
+用户：
+
+删除完成周报
+
+返回：
+
+{
+    "tools":[
+        {
+            "tool":"delete_task",
+            "args":{
+                "title":"完成周报"
             }
         }
     ]
