@@ -1,3 +1,9 @@
+from app.crud.task import (
+    list_user_tasks,
+    create_task as crud_create_task,
+)
+from app.schemas.task import TaskCreate
+
 from sqlalchemy.orm import Session
 
 from app.crud.task import list_user_tasks
@@ -48,4 +54,28 @@ def get_user_info(
     return get_user_by_id(
         db,
         current_user.id,
+    )
+
+def create_task(
+    db: Session,
+    current_user: User,
+    title: str,
+    description: str = "",
+    priority: str = "medium",
+):
+    """
+    创建任务
+    """
+
+    task = TaskCreate(
+        title=title,
+        description=description,
+        status="todo",
+        priority=priority,
+        user_id=current_user.id,
+    )
+
+    return crud_create_task(
+        db=db,
+        task=task,
     )

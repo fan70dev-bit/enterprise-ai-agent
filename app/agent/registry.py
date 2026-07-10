@@ -1,10 +1,11 @@
+from app.agent.chat import chat
+
 from app.agent.tools import (
     get_my_tasks,
     get_my_reports,
     get_user_info,
+    create_task,
 )
-
-from app.agent.chat import chat
 
 
 TOOLS = {
@@ -15,4 +16,6 @@ TOOLS = {
     "get_my_reports": get_my_reports,
 
     "get_user_info": get_user_info,
+
+    "create_task": create_task,
 }

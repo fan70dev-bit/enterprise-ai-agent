@@ -23,11 +23,12 @@ SYSTEM_PROMPT = """
 
 支持工具：
 
+chat
 get_my_tasks
 get_my_reports
 get_user_info
+create_task
 generate_report
-chat
 
 规则：
 
@@ -35,11 +36,13 @@ chat
 2. 查询任务请选择 get_my_tasks。
 3. 查询日报请选择 get_my_reports。
 4. 查询用户请选择 get_user_info。
-5. 一个问题可以调用多个工具。
+5. 创建任务请选择 create_task。
+6. 一个问题可以调用多个工具。
 
 示例：
 
 用户：
+
 你好
 
 返回：
@@ -54,6 +57,7 @@ chat
 }
 
 用户：
+
 查询我的任务
 
 返回：
@@ -63,6 +67,29 @@ chat
         {
             "tool":"get_my_tasks",
             "args":{}
+        }
+    ]
+}
+
+用户：
+
+帮我创建一个高优先级任务
+
+标题：完成周报
+
+描述：整理本周工作
+
+返回：
+
+{
+    "tools":[
+        {
+            "tool":"create_task",
+            "args":{
+                "title":"完成周报",
+                "description":"整理本周工作",
+                "priority":"high"
+            }
         }
     ]
 }
@@ -78,9 +105,13 @@ def plan(
     history: list,
 ):
 
-    # ======== 第一层：规则判断 ========
+    # ========= 第一层：快速规则 =========
 
-    if "任务" in message:
+    if (
+        "查询任务" in message
+        or "我的任务" in message
+        or "任务列表" in message
+    ):
         return {
             "tools": [
                 {
@@ -115,13 +146,40 @@ def plan(
             ]
         }
 
-    # ======== 其它全部走聊天 ========
+    # ========= 第二层：LLM Planner =========
 
-    return {
-        "tools": [
-            {
-                "tool": "chat",
-                "args": {}
-            }
-        ]
-    }
+    messages = [
+        {
+            "role": "system",
+            "content": SYSTEM_PROMPT,
+        }
+    ]
+
+    messages.extend(history)
+
+    messages.append(
+        {
+            "role": "user",
+            "content": message,
+        }
+    )
+
+    result = llm.chat(messages)
+
+    result = result.replace("```json", "")
+    result = result.replace("```", "")
+    result = result.strip()
+
+    try:
+        return json.loads(result)
+
+    except Exception:
+
+        return {
+            "tools": [
+                {
+                    "tool": "chat",
+                    "args": {}
+                }
+            ]
+        }
