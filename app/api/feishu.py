@@ -14,7 +14,9 @@ from app.agent.agent import agent
 from app.crud.user import get_user_by_open_id
 
 from app.services.feishu import send_text_message
+from app.crud.chat_message import create_message
 
+from app.services.message_dedup import is_duplicate
 
 
 router = APIRouter()
@@ -44,6 +46,14 @@ async def webhook(request: Request):
 
     event = data["event"]
 
+    message_id = event["message"]["message_id"]
+
+    if is_duplicate(message_id):
+        print("Duplicate message detected.")
+        return {
+            "ok": True
+        }
+
     chat_id = event["message"]["chat_id"]
 
     content = json.loads(
@@ -71,6 +81,13 @@ async def webhook(request: Request):
             return {
                 "ok": True
             }
+        
+        create_message(
+            db=db,
+            user_id=current_user.id,
+            role="user",
+            content=text,
+        )
 
         reply = agent.run(
             message=text,

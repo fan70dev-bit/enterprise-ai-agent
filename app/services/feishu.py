@@ -2,9 +2,29 @@ import json
 import requests
 
 from app.core.config import settings
+from app.services.redis import redis_client
+
+
+TOKEN_KEY = "feishu:tenant_access_token"
 
 
 def get_tenant_access_token():
+
+    # ==========================
+    # 1. 先查 Redis
+    # ==========================
+
+    token = redis_client.get(TOKEN_KEY)
+
+    if token:
+
+        print("Tenant Token From Redis")
+
+        return token
+
+    # ==========================
+    # 2. Redis没有，再请求飞书
+    # ==========================
 
     url = "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal"
 
@@ -21,9 +41,23 @@ def get_tenant_access_token():
 
     data = resp.json()
 
-    print("Tenant Token:", data)
+    print("=" * 60)
+    print("Tenant Token From Feishu")
+    print(data)
+    print("=" * 60)
 
-    return data["tenant_access_token"]
+    token = data["tenant_access_token"]
+
+    expire = int(data["expire"])
+
+    # 留一分钟余量
+    redis_client.setex(
+        TOKEN_KEY,
+        expire - 60,
+        token,
+    )
+
+    return token
 
 
 def send_text_message(
@@ -45,7 +79,7 @@ def send_text_message(
         "msg_type": "text",
         "content": json.dumps(
             {
-                "text": text
+                "text": text,
             },
             ensure_ascii=False,
         ),
@@ -60,7 +94,7 @@ def send_text_message(
         url,
         headers=headers,
         params={
-            "receive_id_type": "chat_id"
+            "receive_id_type": "chat_id",
         },
         json=body,
         timeout=10,
@@ -70,3 +104,5 @@ def send_text_message(
     print("Feishu Response:")
     print(resp.json())
     print("=" * 60)
+
+    resp.raise_for_status()

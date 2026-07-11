@@ -26,3 +26,5 @@ alembic/__pycache__/
 
 # Logs
 *.log
+
+*.deb

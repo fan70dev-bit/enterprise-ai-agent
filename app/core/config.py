@@ -17,6 +17,9 @@ class Settings(BaseSettings):
     FEISHU_APP_ID: str
     FEISHU_APP_SECRET: str
 
+    REDIS_HOST: str
+    REDIS_PORT: int
+
 
     SECRET_KEY: str = "your-super-secret-key-change-this"
 
