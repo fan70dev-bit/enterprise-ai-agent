@@ -14,6 +14,9 @@ class Settings(BaseSettings):
 
     DEEPSEEK_API_KEY: str
 
+    FEISHU_APP_ID: str
+    FEISHU_APP_SECRET: str
+
 
     SECRET_KEY: str = "your-super-secret-key-change-this"
 

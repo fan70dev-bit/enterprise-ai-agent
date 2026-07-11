@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 
+from app.api.feishu import router as feishu_router
+
 from app.api.department import router as department_router
 from app.api.user import router as user_router
 from app.api.auth import router as auth_router
@@ -28,6 +30,9 @@ app.include_router(report_router)
 # Agent
 app.include_router(agent_router)
 app.include_router(agent_report_router)
+
+# Feishu
+app.include_router(feishu_router)
 
 
 @app.get("/")

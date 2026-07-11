@@ -64,3 +64,15 @@ def delete_user(
 
     db.delete(db_user)
     db.commit()
+
+
+def get_user_by_open_id(
+    db: Session,
+    open_id: str,
+) -> User | None:
+
+    return (
+        db.query(User)
+        .filter(User.open_id == open_id)
+        .first()
+    )

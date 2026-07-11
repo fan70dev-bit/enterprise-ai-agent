@@ -71,4 +71,10 @@ class User(Base):
         back_populates="user",
     )
 
+    open_id: Mapped[str | None] = mapped_column(
+        String(100),
+        unique=True,
+        nullable=True
+    )
+
     
