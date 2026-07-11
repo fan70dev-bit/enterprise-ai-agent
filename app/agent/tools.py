@@ -80,7 +80,7 @@ def create_task(
     priority: str = "medium",
 ):
     """
-    创建任务
+    AI 创建任务
     """
 
     task = TaskCreate(
@@ -88,12 +88,12 @@ def create_task(
         description=description,
         status="todo",
         priority=priority,
-        user_id=current_user.id,
     )
 
-    return crud_create_task(
+    return create_task_service(
         db=db,
         task=task,
+        current_user=current_user,
     )
 
 

@@ -1,5 +1,6 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
+from app.models.user import User
 
 
 from app.crud.task import (
@@ -17,14 +18,36 @@ from app.schemas.task import (
     TaskUpdate,
 )
 
+from app.crud.task import (
+    create_task as crud_create_task,
+    get_task_by_title,
+)
+
 
 
 def create_task_service(
-    db:Session,
-    task:TaskCreate
+    db: Session,
+    task: TaskCreate,
+    current_user: User,
 ):
 
-    return create_task(db,task)
+    old_task = get_task_by_title(
+        db=db,
+        user_id=current_user.id,
+        title=task.title,
+    )
+
+    if old_task:
+        return {
+            "message": f"任务【{task.title}】已经存在，无需重复创建。"
+        }
+
+    task.user_id = current_user.id
+
+    return crud_create_task(
+        db=db,
+        task=task,
+    )
 
 
 
@@ -101,3 +124,4 @@ def delete_task_service(
         db,
         task
     )
+

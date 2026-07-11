@@ -142,3 +142,21 @@ def delete_task_by_title(
     db.commit()
 
     return db_task
+
+def get_task_by_title(
+    db,
+    user_id: int,
+    title: str,
+):
+    """
+    根据标题查询当前用户任务
+    """
+
+    return (
+        db.query(Task)
+        .filter(
+            Task.user_id == user_id,
+            Task.title == title,
+        )
+        .first()
+    )

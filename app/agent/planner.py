@@ -109,7 +109,7 @@ generate_report
 
 用户：
 
-把完成周报改成已完成
+把学习Redis改成已完成
 
 返回：
 
@@ -118,7 +118,44 @@ generate_report
         {
             "tool":"update_task",
             "args":{
-                "title":"完成周报",
+                "title":"学习Redis",
+                "status":"done"
+            }
+        }
+    ]
+}
+
+用户：
+
+把AI Agent设计改成高优先级
+
+返回：
+
+{
+    "tools":[
+        {
+            "tool":"update_task",
+            "args":{
+                "title":"AI Agent设计",
+                "priority":"high"
+            }
+        }
+    ]
+}
+
+用户：
+
+把数据库设计改成低优先级，并标记完成
+
+返回：
+
+{
+    "tools":[
+        {
+            "tool":"update_task",
+            "args":{
+                "title":"数据库设计",
+                "priority":"low",
                 "status":"done"
             }
         }

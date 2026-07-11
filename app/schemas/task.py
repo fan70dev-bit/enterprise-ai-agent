@@ -13,7 +13,7 @@ class TaskBase(BaseModel):
 
     priority: str = "medium"
 
-    user_id: int
+    user_id: int | None = None
 
 
 
