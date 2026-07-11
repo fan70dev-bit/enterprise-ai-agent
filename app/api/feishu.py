@@ -18,6 +18,8 @@ from app.crud.chat_message import create_message
 
 from app.services.message_dedup import is_duplicate
 
+from app.services.feishu_card import send_task_card
+
 
 router = APIRouter()
 
@@ -95,10 +97,39 @@ async def webhook(request: Request):
             current_user=current_user,
         )
 
-        send_text_message(
-            chat_id=chat_id,
-            text=str(reply),
-        )
+        # 查询任务使用卡片
+        if "任务" in text:
+
+            from app.crud.task import list_user_tasks
+
+            tasks = list_user_tasks(
+                db=db,
+                user_id=current_user.id,
+            )
+
+            task_list = []
+
+            for task in tasks:
+
+                task_list.append(
+                    {
+                        "title": task.title,
+                        "status": task.status,
+                        "priority": task.priority,
+                    }
+                )
+
+            send_task_card(
+                chat_id=chat_id,
+                tasks=task_list,
+            )
+
+        else:
+
+            send_text_message(
+                chat_id=chat_id,
+                text=str(reply),
+            )
 
         print("=" * 60)
         print("Agent Reply:")
