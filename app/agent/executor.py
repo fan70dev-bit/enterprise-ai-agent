@@ -3,12 +3,17 @@ from app.agent.serializer import serialize
 from app.llm.summarizer import summarize
 
 
+
 def execute(
     plan: dict,
     db,
     current_user,
     message: str,
 ):
+    print("=" * 50)
+    print("Planner Result:")
+    print(plan)
+    print("=" * 50)
 
     tools = plan.get("tools", [])
 

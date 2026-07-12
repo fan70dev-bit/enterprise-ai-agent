@@ -25,6 +25,42 @@ The project integrates with **Feishu Bot**, allowing employees to complete offic
 
 ---
 
+# Project Demonstration
+
+## Feishu Bot
+
+![demo](docs/images/demo.png)
+
+---
+
+## Swagger
+
+![swagger](docs/images/swagger.png)
+
+---
+
+## GitHub Actions
+
+![ci](docs/images/github-actions.png)
+
+---
+
+## Docker Deployment
+
+![docker](docs/images/docker.png)
+
+---
+
+## MySQL
+
+![mysql](docs/images/mysql.png)
+
+---
+
+## Project Structure
+
+![structure](docs/images/project-structure.png)
+
 # System Architecture
 
 ```mermaid

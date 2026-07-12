@@ -26,7 +26,7 @@ from app.schemas.report import ReportCreate
 
 from app.llm.report_generator import generate_daily_report
 
-from app.services.task import create_task as create_task_service
+from app.services.task import create_task_service
 
 
 def get_my_tasks(

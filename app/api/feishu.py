@@ -1,4 +1,5 @@
 import json
+import traceback
 
 from fastapi import APIRouter, Request, Depends
 from sqlalchemy.orm import Session
@@ -98,7 +99,12 @@ async def webhook(request: Request):
         )
 
         # 查询任务使用卡片
-        if "任务" in text:
+        # 只有查询任务才发送任务卡片
+        if (
+            "查询" in text
+            or "查看" in text
+            or "我的任务" in text
+        ):
 
             from app.crud.task import list_user_tasks
 
@@ -110,7 +116,6 @@ async def webhook(request: Request):
             task_list = []
 
             for task in tasks:
-
                 task_list.append(
                     {
                         "title": task.title,
@@ -119,13 +124,19 @@ async def webhook(request: Request):
                     }
                 )
 
-            send_task_card(
-                chat_id=chat_id,
-                tasks=task_list,
-            )
+            try:
+                send_task_card(
+                    chat_id=chat_id,
+                    tasks=task_list,
+                )
+
+            except Exception:
+                send_text_message(
+                    chat_id=chat_id,
+                    text=str(reply),
+                )
 
         else:
-
             send_text_message(
                 chat_id=chat_id,
                 text=str(reply),
@@ -136,12 +147,16 @@ async def webhook(request: Request):
         print(reply)
         print("=" * 60)
 
+        
+
         # 下一步将在这里调用飞书发送消息 API
         # send_message(chat_id, reply)
 
     except Exception as e:
 
-        print(e)
+        print("=" * 80)
+        traceback.print_exc()
+        print("=" * 80)
 
     finally:
 

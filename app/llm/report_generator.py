@@ -24,9 +24,28 @@ def generate_daily_report(tasks):
 
     if not tasks:
         task_text = "今天没有完成任何任务。"
+
     else:
+
         for task in tasks:
-            task_text += f"- {task.title}\n"
+
+            # 兼容 serialize() 后的 dict
+            if isinstance(task, dict):
+
+                title = task.get("title", "未知任务")
+                status = task.get("status", "")
+                priority = task.get("priority", "")
+
+            else:
+
+                title = task.title
+                status = task.status
+                priority = task.priority
+
+            task_text += (
+                f"- {title}"
+                f"（状态：{status}，优先级：{priority}）\n"
+            )
 
     messages = [
         {
