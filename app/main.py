@@ -8,6 +8,7 @@ from app.api.auth import router as auth_router
 from app.api.task import router as task_router
 from app.api.agent import router as agent_router
 from app.api.agent_report import router as agent_report_router
+from app.api.agent_log import router as agent_log_router
 from app.api.report import router as report_router
 
 
@@ -33,6 +34,11 @@ app.include_router(agent_report_router)
 
 # Feishu
 app.include_router(feishu_router)
+
+# Log
+app.include_router(
+    agent_log_router
+)
 
 
 @app.get("/")

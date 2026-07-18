@@ -1,6 +1,13 @@
+import json
+import time
+import traceback
+
+
 from app.agent.registry import TOOLS
 from app.agent.serializer import serialize
 from app.llm.summarizer import summarize
+
+from app.crud.agent_log import create_agent_log
 
 
 
@@ -10,49 +17,163 @@ def execute(
     current_user,
     message: str,
 ):
+
+    start_time = time.time()
+
+    used_tools = []
+
     print("=" * 50)
     print("Planner Result:")
     print(plan)
     print("=" * 50)
 
+
     tools = plan.get("tools", [])
 
+
     if not tools:
-        return "没有找到可以执行的工具。"
 
-    # 保存所有 Tool 的结果
-    context = {}
-
-    for item in tools:
-
-        tool_name = item["tool"]
-        args = item.get("args", {})
-
-        tool = TOOLS.get(tool_name)
-
-        if tool is None:
-            continue
-
-        # 普通聊天
-        if tool_name == "chat":
-            return tool(
-                db=db,
-                current_user=current_user,
-                message=message,
-            )
-
-        # 将之前 Tool 的结果传递给后续 Tool
-        result = tool(
+        create_agent_log(
             db=db,
-            current_user=current_user,
-            context=context,
-            **args,
+            data={
+                "user_id": current_user.id,
+                "message": message,
+                "plan": json.dumps(
+                    plan,
+                    ensure_ascii=False,
+                ),
+                "tools": "[]",
+                "latency": time.time()-start_time,
+                "status": "failed",
+                "error": "No tools found",
+            },
         )
 
-        context[tool_name] = serialize(result)
+        return "没有找到可以执行的工具。"
 
-    # 如果只有一个 Tool，直接总结
-    return summarize(
-        message=message,
-        data=context,
-    )
+
+    context = {}
+
+
+    try:
+
+        for item in tools:
+
+
+            tool_name = item["tool"]
+
+            args = item.get(
+                "args",
+                {}
+            )
+
+
+            tool = TOOLS.get(tool_name)
+
+
+            if tool is None:
+                continue
+
+
+            used_tools.append(tool_name)
+
+
+            # 普通聊天
+            if tool_name == "chat":
+
+                result = tool(
+                    db=db,
+                    current_user=current_user,
+                    message=message,
+                )
+
+                create_agent_log(
+                    db=db,
+                    data={
+                        "user_id": current_user.id,
+                        "message": message,
+                        "plan": json.dumps(
+                            plan,
+                            ensure_ascii=False,
+                        ),
+                        "tools": json.dumps(
+                            used_tools,
+                            ensure_ascii=False,
+                        ),
+                        "latency": time.time()-start_time,
+                        "status": "success",
+                    },
+                )
+
+                return result
+
+
+
+            result = tool(
+                db=db,
+                current_user=current_user,
+                context=context,
+                **args,
+            )
+
+
+            context[tool_name] = serialize(result)
+
+
+
+        reply = summarize(
+            message=message,
+            data=context,
+        )
+
+
+        create_agent_log(
+            db=db,
+            data={
+                "user_id": current_user.id,
+                "message": message,
+                "plan": json.dumps(
+                    plan,
+                    ensure_ascii=False,
+                ),
+                "tools": json.dumps(
+                    used_tools,
+                    ensure_ascii=False,
+                ),
+                "latency": time.time()-start_time,
+                "status": "success",
+            },
+        )
+
+
+        return reply
+
+
+
+    except Exception as e:
+
+
+        traceback.print_exc()
+
+
+        create_agent_log(
+            db=db,
+            data={
+                "user_id": current_user.id,
+                "message": message,
+                "plan": json.dumps(
+                    plan,
+                    ensure_ascii=False,
+                ),
+                "tools": json.dumps(
+                    used_tools,
+                    ensure_ascii=False,
+                ),
+                "latency": time.time()-start_time,
+                "status": "failed",
+                "error": str(e),
+            },
+        )
+
+
+        raise
